@@ -2,10 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ShoppingCart, CircleUser } from 'lucide-react'
+import { ShoppingCart, CircleUser, LayoutDashboard, User, LogOut } from 'lucide-react'
+import { useRef, useState } from 'react'
 import { SearchInput } from '@/components/ui/search-input'
 import { useCartStore } from '@/stores/cart.store'
 import { cn } from '@/lib/utils'
+import { logout } from '@/actions/auth'
 
 const navItems = [
   { label: 'Découvrir', href: '/decouvrir' },
@@ -14,10 +16,12 @@ const navItems = [
   { label: 'Communauté', href: '/communaute' },
 ]
 
-export function Navbar() {
-  const pathname  = usePathname()
-  const totalItems = useCartStore((s) => s.totalItems())
+export function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
+  const pathname    = usePathname()
+  const totalItems  = useCartStore((s) => s.totalItems())
   const setCartOpen = useCartStore((s) => s.setCartOpen)
+  const [menuOpen, setMenuOpen]  = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 h-16 bg-surface-card border-b border-border">
@@ -90,18 +94,64 @@ export function Navbar() {
             )}
           </button>
 
-          <Link
-            href="/compte"
-            aria-label="Mon compte"
-            className={cn(
-              'size-9 flex items-center justify-center rounded-lg',
-              'text-text-secondary hover:bg-surface-subtle hover:text-text-primary',
-              'transition-colors duration-[var(--duration-fast)]',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600',
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label="Mon compte"
+              aria-expanded={menuOpen}
+              className={cn(
+                'size-9 flex items-center justify-center rounded-lg',
+                'text-text-secondary hover:bg-surface-subtle hover:text-text-primary',
+                'transition-colors duration-[var(--duration-fast)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600',
+                menuOpen && 'bg-surface-subtle text-text-primary',
+              )}
+            >
+              <CircleUser size={20} />
+            </button>
+
+            {menuOpen && (
+              <>
+                {/* backdrop */}
+                <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+                <div className="absolute right-0 top-full mt-2 z-50 w-48 rounded-xl border border-border bg-surface-card shadow-lg py-1 overflow-hidden">
+                  <Link
+                    href="/compte"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 text-sm text-text-secondary hover:bg-surface-subtle hover:text-text-primary transition-colors"
+                  >
+                    <User size={15} />
+                    Mon compte
+                  </Link>
+
+                  {isAdmin && (
+                    <>
+                      <div className="my-1 border-t border-border" />
+                      <Link
+                        href="/admin"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 text-sm font-semibold text-brand-600 hover:bg-brand-50 transition-colors"
+                      >
+                        <LayoutDashboard size={15} />
+                        Tableau de bord
+                      </Link>
+                    </>
+                  )}
+
+                  <div className="my-1 border-t border-border" />
+                  <form action={logout}>
+                    <button
+                      type="submit"
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-text-secondary hover:bg-surface-subtle hover:text-red-600 transition-colors"
+                    >
+                      <LogOut size={15} />
+                      Déconnexion
+                    </button>
+                  </form>
+                </div>
+              </>
             )}
-          >
-            <CircleUser size={20} />
-          </Link>
+          </div>
         </div>
       </div>
     </header>
