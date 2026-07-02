@@ -70,6 +70,16 @@ export async function getBook(slug: string): Promise<Book | null> {
   } as Book
 }
 
+export async function getBookByISBN(isbn: string): Promise<Book | null> {
+  const supabase = await getSupabaseServerClient()
+  const { data } = await supabase
+    .from('books')
+    .select('*, author:authors(id, name, slug)')
+    .eq('isbn', isbn)
+    .single()
+  return data as Book | null
+}
+
 export async function getBooks(filters: CatalogFilters = {}): Promise<PaginatedBooks> {
   const supabase = await getSupabaseServerClient()
   const { q, genre, sort = 'newest', page = 1, min, max, format } = filters

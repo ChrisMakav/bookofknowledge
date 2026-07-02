@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
+import Link from 'next/link'
 import { getBook } from '@/actions/books'
 import { RatingStars } from '@/components/ui/rating-stars'
 import { ReviewCard } from '@/components/books/review-card'
@@ -31,13 +32,36 @@ export default async function BookPage({ params }: BookPageProps) {
   const book = await getBook(slug)
   if (!book) notFound()
 
-  const author     = (book as { author?: { name?: string; bio?: string } }).author
+  const author     = (book as { author?: { name?: string; bio?: string; slug?: string } }).author
   const reviews    = ((book as { reviews?: Review[] }).reviews ?? []) as (Review & { profile?: { full_name: string | null } })[]
   const avgRating  = book.rating_avg ?? 0
   const reviewCount = book.review_count ?? 0
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type':    'Book',
+    name:       book.title,
+    author:     author ? { '@type': 'Person', name: author.name } : undefined,
+    isbn:       book.isbn ?? undefined,
+    numberOfPages: book.page_count ?? undefined,
+    image:      book.cover_url,
+    description: book.synopsis ?? book.description ?? undefined,
+    offers: book.price_hardcover ? {
+      '@type':        'Offer',
+      price:          book.price_hardcover,
+      priceCurrency:  'EUR',
+      availability:   'https://schema.org/InStock',
+    } : undefined,
+    aggregateRating: reviewCount > 0 ? {
+      '@type':       'AggregateRating',
+      ratingValue:   avgRating,
+      reviewCount,
+    } : undefined,
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-10">
         {/* Cover */}
         <div className="flex flex-col gap-4">
@@ -64,7 +88,14 @@ export default async function BookPage({ params }: BookPageProps) {
             </h1>
             {author && (
               <p className="mt-1 text-base text-text-secondary">
-                par <span className="font-semibold text-text-primary">{author.name}</span>
+                par{' '}
+                {author.slug ? (
+                  <Link href={`/auteurs/${author.slug}`} className="font-semibold text-brand-600 hover:underline">
+                    {author.name}
+                  </Link>
+                ) : (
+                  <span className="font-semibold text-text-primary">{author.name}</span>
+                )}
               </p>
             )}
           </div>
