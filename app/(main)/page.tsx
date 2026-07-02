@@ -1,0 +1,217 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { Sparkles, BookOpen, Shield } from 'lucide-react'
+import { getFeaturedBooks, getNewReleases, getTrendingBooks } from '@/actions/books'
+import { BookCard } from '@/components/books/book-card'
+import { CTABanner } from '@/components/marketing/cta-banner'
+import type { Book } from '@/types'
+
+export const metadata: Metadata = {
+  title: 'Book of Knowledge — Where Every Story Comes to Life',
+}
+
+// ─── Sections ────────────────────────────────────────────────────────────────
+
+const CATEGORIES = [
+  { label: 'Science-Fiction',  emoji: '🚀', href: '/catalogue?genre=scifi',     color: 'var(--color-genre-scifi)' },
+  { label: 'Romance',          emoji: '💕', href: '/catalogue?genre=romance',    color: 'var(--color-genre-romance)' },
+  { label: 'Thriller',         emoji: '🔍', href: '/catalogue?genre=thriller',   color: 'var(--color-genre-thriller)' },
+  { label: 'Fantasy',          emoji: '✨', href: '/catalogue?genre=fantasy',    color: 'var(--color-genre-fantasy)' },
+  { label: 'Lifestyle',        emoji: '🌿', href: '/catalogue?genre=lifestyle',  color: 'var(--color-genre-lifestyle)' },
+  { label: 'Tech',             emoji: '💻', href: '/catalogue?genre=tech',       color: 'var(--color-genre-tech)' },
+]
+
+const TRUST_FEATURES = [
+  { icon: Sparkles, label: '50 000+ titres',       sub: 'Romans, essais, ebooks' },
+  { icon: BookOpen, label: 'Livraison 24h',         sub: 'Ebooks téléchargeables instantanément' },
+  { icon: Shield,   label: 'Paiement sécurisé',    sub: 'Stripe, 3D Secure' },
+]
+
+function Section({
+  title,
+  seeAllHref,
+  children,
+}: {
+  title:       string
+  seeAllHref?: string
+  children:    React.ReactNode
+}) {
+  return (
+    <section className="py-12">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold font-display text-text-primary">{title}</h2>
+          {seeAllHref && (
+            <Link
+              href={seeAllHref}
+              className="text-sm text-brand-600 font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 rounded"
+            >
+              Voir tout
+            </Link>
+          )}
+        </div>
+        {children}
+      </div>
+    </section>
+  )
+}
+
+function BookRow({ books }: { books: Book[] }) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      {books.map((book) => (
+        <BookCard
+          key={book.id}
+          book={book}
+          author={(book as { author?: { name?: string } }).author?.name}
+        />
+      ))}
+    </div>
+  )
+}
+
+// ─── Hero ─────────────────────────────────────────────────────────────────────
+
+function Hero() {
+  return (
+    <section
+      className="relative overflow-hidden min-h-[60vh] flex items-center"
+      style={{
+        background: 'linear-gradient(135deg, var(--color-surface-dark) 0%, #2D1B69 60%, #1E1B3A 100%)',
+      }}
+    >
+      {/* Decorative orb */}
+      <div
+        className="absolute -top-24 -right-24 size-96 rounded-full opacity-30 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, #7755FF 0%, transparent 70%)',
+        }}
+        aria-hidden
+      />
+
+      <div className="relative max-w-7xl mx-auto px-6 py-24">
+        <div className="max-w-2xl flex flex-col gap-6">
+          <span className="inline-flex w-fit items-center gap-1.5 px-3 py-1 rounded-full bg-accent-500/20 text-accent-400 text-xs font-semibold uppercase tracking-wider border border-accent-500/30">
+            <Sparkles size={12} />
+            Nouveautés de l&apos;été 2026
+          </span>
+
+          <h1 className="font-display text-5xl md:text-6xl font-extrabold text-white leading-[1.1] tracking-tight">
+            Où chaque histoire
+            <br />
+            <span className="text-accent-400">prend vie</span>
+          </h1>
+
+          <p className="text-base md:text-lg text-text-inverse-muted leading-relaxed max-w-xl">
+            Découvrez, achetez et lisez des milliers de livres soigneusement
+            sélectionnés pour les lecteurs passionnés.
+          </p>
+
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/catalogue"
+              className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-sm font-semibold bg-brand-600 text-white hover:bg-brand-700 transition-colors duration-[var(--duration-base)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark"
+            >
+              Explorer le catalogue
+            </Link>
+            <Link
+              href="/decouvrir"
+              className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-sm font-semibold border border-white/30 text-white hover:bg-white/10 transition-colors duration-[var(--duration-base)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            >
+              Découvrir
+            </Link>
+          </div>
+
+          {/* Trust strip */}
+          <div className="flex flex-wrap gap-6 mt-2">
+            {TRUST_FEATURES.map(({ icon: Icon, label, sub }) => (
+              <div key={label} className="flex items-center gap-2">
+                <Icon size={16} className="text-accent-400 shrink-0" />
+                <div>
+                  <p className="text-xs font-semibold text-white">{label}</p>
+                  <p className="text-[11px] text-text-inverse-muted">{sub}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── Category pills ───────────────────────────────────────────────────────────
+
+function CategoryRail() {
+  return (
+    <section className="py-8 border-b border-border">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex flex-wrap gap-3 justify-center">
+          {CATEGORIES.map(({ label, emoji, href, color }) => (
+            <Link
+              key={label}
+              href={href}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border border-border hover:shadow-sm transition-all duration-[var(--duration-base)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600"
+              style={{ color }}
+            >
+              <span>{emoji}</span>
+              {label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default async function HomePage() {
+  const [featured, newReleases, trending] = await Promise.all([
+    getFeaturedBooks(),
+    getNewReleases(),
+    getTrendingBooks(),
+  ])
+
+  return (
+    <>
+      <Hero />
+      <CategoryRail />
+
+      {trending.length > 0 && (
+        <div className="bg-surface-page">
+          <Section title="En ce moment" seeAllHref="/catalogue?sort=popularity">
+            <BookRow books={trending} />
+          </Section>
+        </div>
+      )}
+
+      {newReleases.length > 0 && (
+        <div className="bg-white">
+          <Section title="Nouveautés" seeAllHref="/catalogue?sort=newest">
+            <BookRow books={newReleases} />
+          </Section>
+        </div>
+      )}
+
+      {featured.length > 0 && (
+        <div className="bg-surface-page">
+          <Section title="Notre sélection" seeAllHref="/catalogue">
+            <BookRow books={featured} />
+          </Section>
+        </div>
+      )}
+
+      <div className="py-12">
+        <div className="max-w-7xl mx-auto px-6">
+          <CTABanner
+            headline="Rejoignez des millions de lecteurs"
+            description="Accédez à notre catalogue complet, recevez des recommandations personnalisées et suivez votre progression de lecture."
+            primaryCTA={{ label: 'Créer un compte gratuit', href: '/inscription' }}
+            secondaryCTA={{ label: 'En savoir plus', href: '/a-propos' }}
+          />
+        </div>
+      </div>
+    </>
+  )
+}
