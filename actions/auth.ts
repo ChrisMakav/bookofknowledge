@@ -7,6 +7,7 @@ import { LoginSchema, RegisterSchema, ForgotPasswordSchema } from '@/lib/validat
 export interface ActionResult {
   error?: string
   success?: boolean
+  redirectTo?: string
 }
 
 export async function login(

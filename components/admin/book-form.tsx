@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState, useState, useRef } from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { ActionResult } from '@/actions/auth'
@@ -73,9 +74,17 @@ export function BookForm({ action, book, authors, categories, selectedCategoryId
   return (
     <form action={formAction} className="flex flex-col gap-6 max-w-2xl">
       {state?.error && (
-        <p role="alert" className="text-sm text-error bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-          {state.error}
-        </p>
+        <div role="alert" className="text-sm text-error bg-red-50 border border-red-200 rounded-lg px-3 py-2 flex items-center justify-between gap-3">
+          <span>{state.error}</span>
+          {state.redirectTo && (
+            <Link
+              href={state.redirectTo}
+              className="shrink-0 text-xs font-semibold underline hover:no-underline"
+            >
+              Modifier ce livre →
+            </Link>
+          )}
+        </div>
       )}
 
       <div className="grid grid-cols-2 gap-4">

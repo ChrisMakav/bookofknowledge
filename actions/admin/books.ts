@@ -43,7 +43,18 @@ export async function createBook(
   const supabase = await getSupabaseServiceClient()
   const { data: newBook, error } = await supabase.from('books').insert(parsed.data).select('id').single()
   if (error) {
-    if (error.code === '23505') return { error: 'Un livre avec ce slug ou cet ISBN existe déjà.' }
+    if (error.code === '23505') {
+      const { data: existing } = await supabase
+        .from('books')
+        .select('id')
+        .or(`slug.eq.${parsed.data.slug},isbn.eq.${parsed.data.isbn ?? ''}`)
+        .limit(1)
+        .single()
+      return {
+        error: 'Un livre avec ce slug ou cet ISBN existe déjà.',
+        redirectTo: existing ? `/admin/livres/${existing.id}/modifier` : undefined,
+      }
+    }
     return { error: error.message }
   }
 
