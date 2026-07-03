@@ -6,6 +6,17 @@ import { getSupabaseServiceClient } from '@/lib/supabase/server'
 import { BookSchema } from '@/lib/validations/book'
 import type { ActionResult } from '@/actions/auth'
 
+async function uploadCoverFile(supabase: Awaited<ReturnType<typeof getSupabaseServiceClient>>, file: File): Promise<string | null> {
+  const ext      = file.name.split('.').pop() ?? 'jpg'
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+  const { data, error } = await supabase.storage
+    .from('covers')
+    .upload(filename, file, { contentType: file.type, upsert: false })
+  if (error || !data) return null
+  const { data: { publicUrl } } = supabase.storage.from('covers').getPublicUrl(data.path)
+  return publicUrl
+}
+
 export async function adminGetBooks({ page = 1, q }: { page?: number; q?: string } = {}) {
   const supabase = await getSupabaseServiceClient()
   const limit = 20
@@ -41,8 +52,15 @@ export async function createBook(
 
   const categoryIds = formData.getAll('category_ids') as string[]
 
-  const supabase = await getSupabaseServiceClient()
-  const { data: newBook, error } = await supabase.from('books').insert(parsed.data).select('id').single()
+  const supabase   = await getSupabaseServiceClient()
+  const coverFile  = formData.get('cover_file') as File | null
+  let   coverUrl   = parsed.data.cover_url ?? ''
+  if (coverFile && coverFile.size > 0) {
+    const uploaded = await uploadCoverFile(supabase, coverFile)
+    if (uploaded) coverUrl = uploaded
+  }
+
+  const { data: newBook, error } = await supabase.from('books').insert({ ...parsed.data, cover_url: coverUrl || undefined }).select('id').single()
   if (error) {
     if (error.code === '23505') {
       const orParts = [`slug.eq.${parsed.data.slug}`]
@@ -91,8 +109,15 @@ export async function updateBook(
 
   const categoryIds = formData.getAll('category_ids') as string[]
 
-  const supabase = await getSupabaseServiceClient()
-  const { error } = await supabase.from('books').update(parsed.data).eq('id', id)
+  const supabase  = await getSupabaseServiceClient()
+  const coverFile = formData.get('cover_file') as File | null
+  let   coverUrl  = parsed.data.cover_url ?? ''
+  if (coverFile && coverFile.size > 0) {
+    const uploaded = await uploadCoverFile(supabase, coverFile)
+    if (uploaded) coverUrl = uploaded
+  }
+
+  const { error } = await supabase.from('books').update({ ...parsed.data, cover_url: coverUrl || undefined }).eq('id', id)
   if (error) return { error: error.message }
 
   await supabase.from('book_categories').delete().eq('book_id', id)

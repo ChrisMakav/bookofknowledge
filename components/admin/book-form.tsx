@@ -2,6 +2,8 @@
 
 import { useActionState, useState, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
+import { Upload, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { ActionResult } from '@/actions/auth'
@@ -68,8 +70,24 @@ interface BookFormProps {
 
 export function BookForm({ action, book, authors, categories, selectedCategoryIds }: BookFormProps) {
   const [state, formAction, pending] = useActionState(action, undefined as ActionResult | undefined)
-  const [slug, setSlug] = useState(book?.slug ?? '')
-  const slugEditedRef = useRef(!!book?.slug)
+  const [slug, setSlug]             = useState(book?.slug ?? '')
+  const slugEditedRef               = useRef(!!book?.slug)
+  const [coverUrl, setCoverUrl]     = useState(book?.cover_url ?? '')
+  const [previewSrc, setPreviewSrc] = useState<string | null>(book?.cover_url ?? null)
+  const fileInputRef                = useRef<HTMLInputElement>(null)
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const objectUrl = URL.createObjectURL(file)
+    setPreviewSrc(objectUrl)
+    setCoverUrl('')
+  }
+
+  function clearFile() {
+    if (fileInputRef.current) fileInputRef.current.value = ''
+    setPreviewSrc(coverUrl || null)
+  }
 
   return (
     <form action={formAction} className="flex flex-col gap-6 max-w-2xl">
@@ -155,7 +173,59 @@ export function BookForm({ action, book, authors, categories, selectedCategoryId
         </div>
       )}
 
-      <Field label="URL de couverture" name="cover_url" defaultValue={book?.cover_url} className="col-span-2" />
+      {/* Cover */}
+      <div className="flex flex-col gap-1.5">
+        <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">Couverture</span>
+        <div className="flex gap-4 items-start">
+          {/* Preview */}
+          {previewSrc && (
+            <div className="relative shrink-0 w-20 h-28 rounded-lg overflow-hidden border border-border bg-surface-subtle">
+              <Image src={previewSrc} alt="Aperçu" fill className="object-cover" unoptimized />
+            </div>
+          )}
+          <div className="flex-1 flex flex-col gap-2">
+            {/* URL input */}
+            <input
+              name="cover_url"
+              type="text"
+              value={coverUrl}
+              placeholder="https://..."
+              onChange={(e) => {
+                setCoverUrl(e.target.value)
+                setPreviewSrc(e.target.value || null)
+                if (fileInputRef.current) fileInputRef.current.value = ''
+              }}
+              className="h-9 w-full rounded-lg border border-border bg-surface-page px-3 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600"
+            />
+            <div className="flex items-center gap-2 text-xs text-text-muted">
+              <div className="h-px flex-1 bg-border" />
+              <span>ou</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            {/* File upload */}
+            <div className="flex items-center gap-2">
+              <label className="flex items-center gap-2 h-9 px-3 rounded-lg border border-dashed border-border bg-surface-subtle text-sm text-text-secondary hover:border-brand-600 hover:text-brand-600 cursor-pointer transition-colors">
+                <Upload size={14} />
+                Télécharger une image
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  name="cover_file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </label>
+              {previewSrc && !coverUrl && (
+                <button type="button" onClick={clearFile} className="text-text-muted hover:text-error transition-colors">
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+            <p className="text-[11px] text-text-muted">JPG, PNG ou WebP · max 5 Mo</p>
+          </div>
+        </div>
+      </div>
       <Field label="Description courte" name="description" type="textarea" defaultValue={book?.description ?? ''} />
       <Field label="Synopsis" name="synopsis" type="textarea" defaultValue={book?.synopsis ?? ''} />
 
