@@ -35,6 +35,7 @@ export async function createBook(
     is_bestseller:  raw.is_bestseller  === 'on',
     is_staff_pick:  raw.is_staff_pick  === 'on',
     author_id:      raw.author_id || null,
+    isbn:           raw.isbn || null,
   })
   if (!parsed.success) return { error: parsed.error.issues[0].message }
 
@@ -44,14 +45,16 @@ export async function createBook(
   const { data: newBook, error } = await supabase.from('books').insert(parsed.data).select('id').single()
   if (error) {
     if (error.code === '23505') {
+      const orParts = [`slug.eq.${parsed.data.slug}`]
+      if (parsed.data.isbn) orParts.push(`isbn.eq.${parsed.data.isbn}`)
       const { data: existing } = await supabase
         .from('books')
         .select('id')
-        .or(`slug.eq.${parsed.data.slug},isbn.eq.${parsed.data.isbn ?? ''}`)
+        .or(orParts.join(','))
         .limit(1)
         .single()
       return {
-        error: 'Un livre avec ce slug ou cet ISBN existe déjà.',
+        error: 'Un livre avec ce slug existe déjà.',
         redirectTo: existing ? `/admin/livres/${existing.id}/modifier` : undefined,
       }
     }
@@ -80,6 +83,7 @@ export async function updateBook(
     is_featured:    raw.is_featured    === 'on',
     is_new_release: raw.is_new_release === 'on',
     is_bestseller:  raw.is_bestseller  === 'on',
+    isbn:           raw.isbn || null,
     is_staff_pick:  raw.is_staff_pick  === 'on',
     author_id:      raw.author_id || null,
   })
