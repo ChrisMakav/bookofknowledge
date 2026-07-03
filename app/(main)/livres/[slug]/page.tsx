@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getBook } from '@/actions/books'
+import { getSupabaseServerClient } from '@/lib/supabase/server'
 import { RatingStars } from '@/components/ui/rating-stars'
 import { ReviewCard } from '@/components/books/review-card'
 import { BookDetailClient } from './book-detail-client'
@@ -31,6 +32,19 @@ export default async function BookPage({ params }: BookPageProps) {
   const { slug } = await params
   const book = await getBook(slug)
   if (!book) notFound()
+
+  const supabase = await getSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  let initialIsFavorited = false
+  if (user) {
+    const { data } = await supabase
+      .from('favorites')
+      .select('book_id')
+      .eq('user_id', user.id)
+      .eq('book_id', book.id)
+      .single()
+    initialIsFavorited = !!data
+  }
 
   const author     = (book as { author?: { name?: string; bio?: string; slug?: string } }).author
   const reviews    = ((book as { reviews?: Review[] }).reviews ?? []) as (Review & { profile?: { full_name: string | null } })[]
@@ -77,7 +91,7 @@ export default async function BookPage({ params }: BookPageProps) {
           </div>
 
           {/* Buy Box — client for interactivity */}
-          <BookDetailClient book={book} />
+          <BookDetailClient book={book} initialIsFavorited={initialIsFavorited} />
         </div>
 
         {/* Info */}

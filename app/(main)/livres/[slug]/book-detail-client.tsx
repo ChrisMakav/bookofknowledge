@@ -1,19 +1,25 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { ShoppingCart, Heart } from 'lucide-react'
 import { EditionSelector } from '@/components/books/edition-selector'
 import { Button } from '@/components/ui/button'
 import { useCartStore } from '@/stores/cart.store'
+import { toggleFavorite } from '@/actions/favorites'
 import type { Book, BookFormat, Edition } from '@/types'
 
 interface BookDetailClientProps {
-  book: Book
+  book:                Book
+  initialIsFavorited?: boolean
 }
 
-export function BookDetailClient({ book }: BookDetailClientProps) {
-  const addItem     = useCartStore((s) => s.addItem)
-  const setCartOpen = useCartStore((s) => s.setCartOpen)
+export function BookDetailClient({ book, initialIsFavorited = false }: BookDetailClientProps) {
+  const addItem      = useCartStore((s) => s.addItem)
+  const setCartOpen  = useCartStore((s) => s.setCartOpen)
+  const router       = useRouter()
+  const [isFavorited, setIsFavorited] = useState(initialIsFavorited)
+  const [favPending, setFavPending]   = useState(false)
 
   // Build editions list from available formats
   const editions: Edition[] = []
@@ -47,6 +53,19 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
     setCartOpen(true)
   }
 
+  async function handleToggleFavorite() {
+    if (favPending) return
+    setFavPending(true)
+    try {
+      const result = await toggleFavorite(book.id)
+      setIsFavorited(result.isFavorited)
+    } catch {
+      router.push('/connexion')
+    } finally {
+      setFavPending(false)
+    }
+  }
+
   if (editions.length === 0) return null
 
   return (
@@ -75,9 +94,18 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
         Ajouter au panier
       </Button>
 
-      <Button variant="ghost" size="md" className="w-full">
-        <Heart size={16} />
-        Ajouter aux favoris
+      <Button
+        variant="ghost"
+        size="md"
+        className="w-full"
+        onClick={handleToggleFavorite}
+        loading={favPending}
+      >
+        <Heart
+          size={16}
+          className={isFavorited ? 'fill-brand-600 text-brand-600' : ''}
+        />
+        {isFavorited ? 'Retiré des favoris' : 'Ajouter aux favoris'}
       </Button>
     </div>
   )
