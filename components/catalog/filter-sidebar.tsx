@@ -6,12 +6,24 @@ import { FilterTag } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
 const GENRES = [
-  { key: 'scifi',      label: 'Science-Fiction' },
-  { key: 'romance',   label: 'Romance' },
-  { key: 'thriller',  label: 'Thriller' },
-  { key: 'fantasy',   label: 'Fantasy' },
-  { key: 'lifestyle', label: 'Lifestyle' },
-  { key: 'tech',      label: 'Tech' },
+  { key: 'biographie',                label: 'Biographie' },
+  { key: 'caractere-de-christ',       label: 'Caractère de Christ' },
+  { key: 'combat-spirituel',          label: 'Combat spirituel' },
+  { key: 'destinee',                  label: 'Destinée' },
+  { key: 'developpement-personnel',   label: 'Développement personnel' },
+  { key: 'entreprise',                label: 'Entreprise' },
+  { key: 'femme',                     label: 'Femme' },
+  { key: 'identite-en-christ',        label: 'Identité en Christ' },
+  { key: 'leadership',                label: 'Leadership' },
+  { key: 'mariage-famille-celibat',   label: 'Mariage, famille, célibat' },
+  { key: 'ministere',                 label: 'Ministère' },
+  { key: 'packs',                     label: 'Packs' },
+  { key: 'priere',                    label: 'Prière' },
+  { key: 'productivite',              label: 'Productivité' },
+  { key: 'relations',                 label: 'Relations' },
+  { key: 'restauration-transformation', label: 'Restauration & Transformation Totale' },
+  { key: 'reussite',                  label: 'Réussite' },
+  { key: 'saint-esprit',              label: 'Saint-Esprit' },
 ] as const
 
 const SORT_OPTIONS = [
@@ -84,7 +96,7 @@ export function FilterSidebar({ className }: FilterSidebarProps) {
       {/* Genres */}
       <div>
         <h3 className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-3">
-          Genre
+          Catégorie
         </h3>
         <div className="flex flex-wrap gap-2">
           {GENRES.map(({ key, label }) => (

@@ -1,12 +1,24 @@
-// ─── Genre & Format ──────────────────────────────────────────────────────────
+// ─── Catégorie & Format ──────────────────────────────────────────────────────
 
 export type GenreKey =
-  | 'scifi'
-  | 'romance'
-  | 'thriller'
-  | 'fantasy'
-  | 'lifestyle'
-  | 'tech'
+  | 'biographie'
+  | 'caractere-de-christ'
+  | 'combat-spirituel'
+  | 'destinee'
+  | 'developpement-personnel'
+  | 'entreprise'
+  | 'femme'
+  | 'identite-en-christ'
+  | 'leadership'
+  | 'mariage-famille-celibat'
+  | 'ministere'
+  | 'packs'
+  | 'priere'
+  | 'productivite'
+  | 'relations'
+  | 'restauration-transformation'
+  | 'reussite'
+  | 'saint-esprit'
 
 export type BookFormat = 'hardcover' | 'paperback' | 'ebook'
 

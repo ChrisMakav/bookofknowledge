@@ -24,12 +24,24 @@ async function getStaffPicks(): Promise<Book[]> {
 }
 
 const GENRES = [
-  { key: 'thriller',  label: 'Thriller',   emoji: '🔪', color: 'bg-red-50 text-red-700 hover:bg-red-100' },
-  { key: 'romance',   label: 'Romance',    emoji: '💛', color: 'bg-pink-50 text-pink-700 hover:bg-pink-100' },
-  { key: 'scifi',     label: 'Science-fiction', emoji: '🚀', color: 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100' },
-  { key: 'fantasy',   label: 'Fantasy',    emoji: '🐉', color: 'bg-purple-50 text-purple-700 hover:bg-purple-100' },
-  { key: 'lifestyle', label: 'Essais',     emoji: '📐', color: 'bg-amber-50 text-amber-700 hover:bg-amber-100' },
-  { key: 'tech',      label: 'Tech',       emoji: '💻', color: 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100' },
+  { key: 'biographie',                label: 'Biographie',                        emoji: '📖', color: 'bg-blue-50 text-blue-700 hover:bg-blue-100' },
+  { key: 'caractere-de-christ',       label: 'Caractère de Christ',               emoji: '✝️', color: 'bg-purple-50 text-purple-700 hover:bg-purple-100' },
+  { key: 'combat-spirituel',          label: 'Combat spirituel',                  emoji: '⚔️', color: 'bg-red-50 text-red-700 hover:bg-red-100' },
+  { key: 'destinee',                  label: 'Destinée',                          emoji: '🎯', color: 'bg-orange-50 text-orange-700 hover:bg-orange-100' },
+  { key: 'developpement-personnel',   label: 'Développement personnel',           emoji: '🌱', color: 'bg-green-50 text-green-700 hover:bg-green-100' },
+  { key: 'entreprise',                label: 'Entreprise',                        emoji: '💼', color: 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100' },
+  { key: 'femme',                     label: 'Femme',                             emoji: '👑', color: 'bg-pink-50 text-pink-700 hover:bg-pink-100' },
+  { key: 'identite-en-christ',        label: 'Identité en Christ',               emoji: '🕊️', color: 'bg-violet-50 text-violet-700 hover:bg-violet-100' },
+  { key: 'leadership',                label: 'Leadership',                        emoji: '🏆', color: 'bg-amber-50 text-amber-700 hover:bg-amber-100' },
+  { key: 'mariage-famille-celibat',   label: 'Mariage, famille, célibat',        emoji: '❤️', color: 'bg-rose-50 text-rose-700 hover:bg-rose-100' },
+  { key: 'ministere',                 label: 'Ministère',                         emoji: '🙏', color: 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100' },
+  { key: 'packs',                     label: 'Packs',                             emoji: '📦', color: 'bg-slate-50 text-slate-700 hover:bg-slate-100' },
+  { key: 'priere',                    label: 'Prière',                            emoji: '🙌', color: 'bg-sky-50 text-sky-700 hover:bg-sky-100' },
+  { key: 'productivite',              label: 'Productivité',                      emoji: '⚡', color: 'bg-yellow-50 text-yellow-700 hover:bg-yellow-100' },
+  { key: 'relations',                 label: 'Relations',                         emoji: '🤝', color: 'bg-teal-50 text-teal-700 hover:bg-teal-100' },
+  { key: 'restauration-transformation', label: 'Restauration & Transformation',  emoji: '🌟', color: 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' },
+  { key: 'reussite',                  label: 'Réussite',                          emoji: '🚀', color: 'bg-lime-50 text-lime-700 hover:bg-lime-100' },
+  { key: 'saint-esprit',              label: 'Saint-Esprit',                      emoji: '🔥', color: 'bg-orange-50 text-orange-700 hover:bg-orange-100' },
 ]
 
 function SectionHeader({

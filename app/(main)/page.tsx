@@ -13,12 +13,24 @@ export const metadata: Metadata = {
 // ─── Sections ────────────────────────────────────────────────────────────────
 
 const CATEGORIES = [
-  { label: 'Science-Fiction',  emoji: '🚀', href: '/catalogue?genre=scifi',     color: 'var(--color-genre-scifi)' },
-  { label: 'Romance',          emoji: '💕', href: '/catalogue?genre=romance',    color: 'var(--color-genre-romance)' },
-  { label: 'Thriller',         emoji: '🔍', href: '/catalogue?genre=thriller',   color: 'var(--color-genre-thriller)' },
-  { label: 'Fantasy',          emoji: '✨', href: '/catalogue?genre=fantasy',    color: 'var(--color-genre-fantasy)' },
-  { label: 'Lifestyle',        emoji: '🌿', href: '/catalogue?genre=lifestyle',  color: 'var(--color-genre-lifestyle)' },
-  { label: 'Tech',             emoji: '💻', href: '/catalogue?genre=tech',       color: 'var(--color-genre-tech)' },
+  { label: 'Biographie',                      emoji: '📖', href: '/catalogue?genre=biographie',                color: '#4F7EF5' },
+  { label: 'Caractère de Christ',             emoji: '✝️', href: '/catalogue?genre=caractere-de-christ',       color: '#7B5CF5' },
+  { label: 'Combat spirituel',                emoji: '⚔️', href: '/catalogue?genre=combat-spirituel',          color: '#E8458A' },
+  { label: 'Destinée',                        emoji: '🎯', href: '/catalogue?genre=destinee',                  color: '#F09335' },
+  { label: 'Développement personnel',         emoji: '🌱', href: '/catalogue?genre=developpement-personnel',   color: '#3CB97E' },
+  { label: 'Entreprise',                      emoji: '💼', href: '/catalogue?genre=entreprise',                color: '#00B8C8' },
+  { label: 'Femme',                           emoji: '👑', href: '/catalogue?genre=femme',                     color: '#E8458A' },
+  { label: 'Identité en Christ',              emoji: '🕊️', href: '/catalogue?genre=identite-en-christ',        color: '#7B5CF5' },
+  { label: 'Leadership',                      emoji: '🏆', href: '/catalogue?genre=leadership',                color: '#F09335' },
+  { label: 'Mariage, famille, célibat',       emoji: '❤️', href: '/catalogue?genre=mariage-famille-celibat',   color: '#3CB97E' },
+  { label: 'Ministère',                       emoji: '🙏', href: '/catalogue?genre=ministere',                 color: '#7B5CF5' },
+  { label: 'Packs',                           emoji: '📦', href: '/catalogue?genre=packs',                     color: '#4F7EF5' },
+  { label: 'Prière',                          emoji: '🙌', href: '/catalogue?genre=priere',                    color: '#00B8C8' },
+  { label: 'Productivité',                    emoji: '⚡', href: '/catalogue?genre=productivite',              color: '#F09335' },
+  { label: 'Relations',                       emoji: '🤝', href: '/catalogue?genre=relations',                 color: '#3CB97E' },
+  { label: 'Restauration & Transformation',   emoji: '🌟', href: '/catalogue?genre=restauration-transformation', color: '#E8458A' },
+  { label: 'Réussite',                        emoji: '🚀', href: '/catalogue?genre=reussite',                  color: '#4F7EF5' },
+  { label: 'Saint-Esprit',                    emoji: '🔥', href: '/catalogue?genre=saint-esprit',              color: '#F09335' },
 ]
 
 const TRUST_FEATURES = [
