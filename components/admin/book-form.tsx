@@ -1,10 +1,21 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { ActionResult } from '@/actions/auth'
 import type { Author, Book, Category } from '@/types'
+
+function toSlug(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+}
 
 function Field({ label, name, type = 'text', defaultValue, placeholder, className }: {
   label:         string
@@ -56,6 +67,8 @@ interface BookFormProps {
 
 export function BookForm({ action, book, authors, categories, selectedCategoryIds }: BookFormProps) {
   const [state, formAction, pending] = useActionState(action, undefined as ActionResult | undefined)
+  const [slug, setSlug] = useState(book?.slug ?? '')
+  const slugEditedRef = useRef(!!book?.slug)
 
   return (
     <form action={formAction} className="flex flex-col gap-6 max-w-2xl">
@@ -66,9 +79,36 @@ export function BookForm({ action, book, authors, categories, selectedCategoryId
       )}
 
       <div className="grid grid-cols-2 gap-4">
-        <Field label="Titre" name="title" defaultValue={book?.title} className="col-span-2" />
-        <Field label="Slug" name="slug"   defaultValue={book?.slug}  placeholder="mon-livre" />
-        <Field label="ISBN" name="isbn"   defaultValue={book?.isbn ?? ''} />
+        {/* Title — auto-fills slug */}
+        <div className="col-span-2 flex flex-col gap-1.5">
+          <label htmlFor="title" className="text-xs font-semibold uppercase tracking-wider text-text-muted">Titre</label>
+          <input
+            id="title" name="title" type="text"
+            defaultValue={book?.title ?? ''}
+            onChange={(e) => {
+              if (!slugEditedRef.current) setSlug(toSlug(e.target.value))
+            }}
+            className="h-9 w-full rounded-lg border border-border bg-surface-page px-3 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600"
+          />
+        </div>
+
+        {/* Slug — editable, shown value kept in sync */}
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="slug" className="text-xs font-semibold uppercase tracking-wider text-text-muted">Slug</label>
+          <input
+            id="slug" name="slug" type="text"
+            value={slug}
+            placeholder="mon-livre"
+            onChange={(e) => {
+              slugEditedRef.current = true
+              setSlug(e.target.value)
+            }}
+            onBlur={(e) => setSlug(toSlug(e.target.value))}
+            className="h-9 w-full rounded-lg border border-border bg-surface-page px-3 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600"
+          />
+        </div>
+
+        <Field label="ISBN" name="isbn" defaultValue={book?.isbn ?? ''} />
       </div>
 
       {/* Author */}
