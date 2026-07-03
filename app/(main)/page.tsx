@@ -88,80 +88,64 @@ function BookRow({ books }: { books: Book[] }) {
 
 function Hero() {
   return (
-    <section
-      className="relative overflow-hidden min-h-[60vh] flex items-center"
-      style={{
-        background: 'linear-gradient(135deg, var(--color-surface-dark) 0%, #2D1B69 60%, #1E1B3A 100%)',
-      }}
-    >
-      {/* Decorative orb */}
-      <div
-        className="absolute -top-24 -right-24 size-96 rounded-full opacity-30 pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, #7755FF 0%, transparent 70%)',
-        }}
-        aria-hidden
+    <section className="relative overflow-hidden min-h-[70vh] flex items-center">
+      {/* Background image */}
+      <Image
+        src="/hero-bookstore.png"
+        alt="Librairie chrétienne Book of Knowledge"
+        fill
+        className="object-cover object-center"
+        priority
       />
 
-      <div className="relative max-w-7xl mx-auto px-6 py-16 md:py-24">
-        <div className="grid md:grid-cols-2 gap-10 items-center">
-          {/* Text */}
-          <div className="flex flex-col gap-6">
-            <span className="inline-flex w-fit items-center gap-1.5 px-3 py-1 rounded-full bg-accent-500/20 text-accent-400 text-xs font-semibold uppercase tracking-wider border border-accent-500/30">
-              <Sparkles size={12} />
-              Librairie chrétienne de référence
-            </span>
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30" />
 
-            <h1 className="font-display text-5xl md:text-6xl font-extrabold text-white leading-[1.1] tracking-tight">
-              Grandis dans la foi,
-              <br />
-              <span className="text-accent-400">un livre à la fois</span>
-            </h1>
+      {/* Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 md:py-28 w-full">
+        <div className="max-w-2xl flex flex-col gap-6">
+          <span className="inline-flex w-fit items-center gap-1.5 px-3 py-1 rounded-full bg-accent-500/20 text-accent-400 text-xs font-semibold uppercase tracking-wider border border-accent-500/30">
+            <Sparkles size={12} />
+            Librairie chrétienne de référence
+          </span>
 
-            <p className="text-base md:text-lg text-text-inverse-muted leading-relaxed max-w-xl">
-              Des centaines de livres chrétiens soigneusement sélectionnés pour
-              nourrir ton âme, développer ton caractère et accomplir ta destinée.
-            </p>
+          <h1 className="font-display text-5xl md:text-6xl font-extrabold text-white leading-[1.1] tracking-tight">
+            Grandis dans la foi,
+            <br />
+            <span className="text-accent-400">un livre à la fois</span>
+          </h1>
 
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/catalogue"
-                className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-sm font-semibold bg-brand-600 text-white hover:bg-brand-700 transition-colors duration-[var(--duration-base)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark"
-              >
-                Explorer le catalogue
-              </Link>
-              <Link
-                href="/decouvrir"
-                className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-sm font-semibold border border-white/30 text-white hover:bg-white/10 transition-colors duration-[var(--duration-base)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-              >
-                Découvrir
-              </Link>
-            </div>
+          <p className="text-base md:text-lg text-white/75 leading-relaxed max-w-xl">
+            Des centaines de livres chrétiens soigneusement sélectionnés pour
+            nourrir ton âme, développer ton caractère et accomplir ta destinée.
+          </p>
 
-            {/* Trust strip */}
-            <div className="flex flex-wrap gap-6 mt-2">
-              {TRUST_FEATURES.map(({ icon: Icon, label, sub }) => (
-                <div key={label} className="flex items-center gap-2">
-                  <Icon size={16} className="text-accent-400 shrink-0" />
-                  <div>
-                    <p className="text-xs font-semibold text-white">{label}</p>
-                    <p className="text-[11px] text-text-inverse-muted">{sub}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/catalogue"
+              className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-sm font-semibold bg-brand-600 text-white hover:bg-brand-700 transition-colors duration-[var(--duration-base)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-dark"
+            >
+              Explorer le catalogue
+            </Link>
+            <Link
+              href="/decouvrir"
+              className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-sm font-semibold border border-white/40 text-white hover:bg-white/10 transition-colors duration-[var(--duration-base)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            >
+              Découvrir
+            </Link>
           </div>
 
-          {/* Image */}
-          <div className="hidden md:block relative h-[420px] rounded-2xl overflow-hidden shadow-2xl">
-            <Image
-              src="/hero-bookstore.png"
-              alt="Librairie chrétienne Book of Knowledge"
-              fill
-              className="object-cover object-center"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/20 rounded-2xl" />
+          {/* Trust strip */}
+          <div className="flex flex-wrap gap-6 mt-2">
+            {TRUST_FEATURES.map(({ icon: Icon, label, sub }) => (
+              <div key={label} className="flex items-center gap-2">
+                <Icon size={16} className="text-accent-400 shrink-0" />
+                <div>
+                  <p className="text-xs font-semibold text-white">{label}</p>
+                  <p className="text-[11px] text-white/60">{sub}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
