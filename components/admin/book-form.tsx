@@ -4,7 +4,7 @@ import { useActionState } from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { ActionResult } from '@/actions/auth'
-import type { Author, Book } from '@/types'
+import type { Author, Book, Category } from '@/types'
 
 function Field({ label, name, type = 'text', defaultValue, placeholder, className }: {
   label:         string
@@ -47,12 +47,14 @@ function Checkbox({ label, name, defaultChecked }: { label: string; name: string
 }
 
 interface BookFormProps {
-  action:   (prev: ActionResult | undefined, formData: FormData) => Promise<ActionResult>
-  book?:    Partial<Book>
-  authors:  Pick<Author, 'id' | 'name'>[]
+  action:               (prev: ActionResult | undefined, formData: FormData) => Promise<ActionResult>
+  book?:                Partial<Book>
+  authors:              Pick<Author, 'id' | 'name'>[]
+  categories?:          Pick<Category, 'id' | 'name'>[]
+  selectedCategoryIds?: string[]
 }
 
-export function BookForm({ action, book, authors }: BookFormProps) {
+export function BookForm({ action, book, authors, categories, selectedCategoryIds }: BookFormProps) {
   const [state, formAction, pending] = useActionState(action, undefined as ActionResult | undefined)
 
   return (
@@ -83,6 +85,26 @@ export function BookForm({ action, book, authors }: BookFormProps) {
           ))}
         </select>
       </div>
+
+      {categories && categories.length > 0 && (
+        <div className="flex flex-col gap-1.5">
+          <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">Catégorie</span>
+          <div className="grid grid-cols-2 gap-2 rounded-lg border border-border bg-surface-page p-3">
+            {categories.map((cat) => (
+              <label key={cat.id} className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  name="category_ids"
+                  value={cat.id}
+                  defaultChecked={selectedCategoryIds?.includes(cat.id)}
+                  className="size-4 rounded accent-brand-600"
+                />
+                <span className="text-sm text-text-primary">{cat.name}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
 
       <Field label="URL de couverture" name="cover_url" defaultValue={book?.cover_url} className="col-span-2" />
       <Field label="Description courte" name="description" type="textarea" defaultValue={book?.description ?? ''} />

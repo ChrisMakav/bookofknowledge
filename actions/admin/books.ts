@@ -38,11 +38,19 @@ export async function createBook(
   })
   if (!parsed.success) return { error: parsed.error.issues[0].message }
 
+  const categoryIds = formData.getAll('category_ids') as string[]
+
   const supabase = await getSupabaseServiceClient()
-  const { error } = await supabase.from('books').insert(parsed.data)
+  const { data: newBook, error } = await supabase.from('books').insert(parsed.data).select('id').single()
   if (error) {
     if (error.code === '23505') return { error: 'Un livre avec ce slug ou cet ISBN existe déjà.' }
     return { error: error.message }
+  }
+
+  if (categoryIds.length > 0) {
+    await supabase.from('book_categories').insert(
+      categoryIds.map((category_id) => ({ book_id: newBook.id, category_id })),
+    )
   }
 
   revalidatePath('/catalogue')
@@ -66,9 +74,18 @@ export async function updateBook(
   })
   if (!parsed.success) return { error: parsed.error.issues[0].message }
 
+  const categoryIds = formData.getAll('category_ids') as string[]
+
   const supabase = await getSupabaseServiceClient()
   const { error } = await supabase.from('books').update(parsed.data).eq('id', id)
   if (error) return { error: error.message }
+
+  await supabase.from('book_categories').delete().eq('book_id', id)
+  if (categoryIds.length > 0) {
+    await supabase.from('book_categories').insert(
+      categoryIds.map((category_id) => ({ book_id: id, category_id })),
+    )
+  }
 
   revalidatePath('/catalogue')
   revalidatePath('/admin/livres')

@@ -10,13 +10,16 @@ export default async function EditBookPage({ params }: { params: Promise<{ id: s
   const { id } = await params
   const supabase = await getSupabaseServiceClient()
 
-  const [{ data: book }, { data: authors }] = await Promise.all([
+  const [{ data: book }, { data: authors }, { data: categories }, { data: bookCats }] = await Promise.all([
     supabase.from('books').select('*').eq('id', id).single(),
     supabase.from('authors').select('id, name').order('name'),
+    supabase.from('categories').select('id, name').order('name'),
+    supabase.from('book_categories').select('category_id').eq('book_id', id),
   ])
 
   if (!book) notFound()
 
+  const selectedCategoryIds = (bookCats ?? []).map((bc: { category_id: string }) => bc.category_id)
   const boundAction = updateBook.bind(null, id)
 
   return (
@@ -24,7 +27,13 @@ export default async function EditBookPage({ params }: { params: Promise<{ id: s
       <h1 className="text-2xl font-bold font-display text-text-primary">
         Modifier : {book.title}
       </h1>
-      <BookForm action={boundAction} book={book} authors={authors ?? []} />
+      <BookForm
+        action={boundAction}
+        book={book}
+        authors={authors ?? []}
+        categories={categories ?? []}
+        selectedCategoryIds={selectedCategoryIds}
+      />
     </div>
   )
 }
