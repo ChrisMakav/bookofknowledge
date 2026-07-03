@@ -32,8 +32,8 @@ export function Footer() {
               Book of Knowledge
             </Link>
             <p className="mt-3 text-sm text-text-inverse-muted leading-relaxed">
-              Où chaque histoire prend vie. Rejoignez des millions de lecteurs
-              qui trouvent leur prochaine obsession.
+              La librairie chrétienne de référence. Des livres qui nourrissent
+              l&apos;âme, édifient le caractère et accomplissent la destinée.
             </p>
           </div>
 
@@ -61,7 +61,7 @@ export function Footer() {
 
         <div className="border-t border-border-dark pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-text-inverse-muted">
-            © {new Date().getFullYear()} Book of Knowledge. Keep the story moving.
+            © {new Date().getFullYear()} Book of Knowledge. Grandis dans la foi, un livre à la fois.
           </p>
         </div>
       </div>
