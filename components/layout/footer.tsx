@@ -3,8 +3,8 @@ import Link from 'next/link'
 const footerLinks = {
   'Explorer': [
     { label: 'Catalogue', href: '/catalogue' },
-    { label: 'Nouveautés', href: '/catalogue?sort=newest' },
-    { label: 'Bestsellers', href: '/catalogue?sort=popularity' },
+    { label: 'Nouveautés', href: '/nouveautes' },
+    { label: 'Bestsellers', href: '/bestsellers' },
     { label: 'Packs', href: '/catalogue?genre=packs' },
   ],
   'Informations': [
