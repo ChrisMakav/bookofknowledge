@@ -91,7 +91,7 @@ function Hero() {
     <section className="relative overflow-hidden min-h-[70vh] flex items-center">
       {/* Background image */}
       <Image
-        src="/hero-bookstore.png"
+        src="/hero-bookstore-v2.png"
         alt="Librairie chrétienne Book of Knowledge"
         fill
         className="object-cover object-center"
