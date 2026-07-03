@@ -1,19 +1,20 @@
 import Link from 'next/link'
 
 const footerLinks = {
-  'Book of Knowledge': [
-    { label: 'À propos', href: '/a-propos' },
-    { label: 'Carrières', href: '/carrieres' },
-    { label: 'Presse', href: '/presse' },
+  'Explorer': [
+    { label: 'Catalogue', href: '/catalogue' },
+    { label: 'Nouveautés', href: '/catalogue?sort=newest' },
+    { label: 'Bestsellers', href: '/catalogue?sort=popularity' },
+    { label: 'Packs', href: '/catalogue?genre=packs' },
   ],
-  'Support': [
-    { label: 'Centre d\'aide', href: '/aide' },
-    { label: 'Carte cadeau', href: '/carte-cadeau' },
-    { label: 'Accessibilité', href: '/accessibilite' },
+  'Informations': [
+    { label: 'À propos', href: '/a-propos' },
+    { label: 'Nos auteurs', href: '/auteurs' },
+    { label: 'Contact', href: '/contact' },
   ],
   'Légal': [
-    { label: 'Confidentialité', href: '/confidentialite' },
     { label: 'CGU', href: '/cgu' },
+    { label: 'Confidentialité', href: '/confidentialite' },
     { label: 'Cookies', href: '/cookies' },
   ],
 }
