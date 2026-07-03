@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'covers.openlibrary.org' },
       { protocol: 'https', hostname: 'upload.wikimedia.org' },
       { protocol: 'https', hostname: 'www.sanogobooks.com' },
+      { protocol: 'https', hostname: 'metanoiaetvie.com' },
     ],
   },
 };
