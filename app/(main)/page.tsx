@@ -7,7 +7,8 @@ import { CTABanner } from '@/components/marketing/cta-banner'
 import type { Book } from '@/types'
 
 export const metadata: Metadata = {
-  title: 'Book of Knowledge — Where Every Story Comes to Life',
+  title: 'Book of Knowledge — Grandis dans la foi, un livre à la fois',
+  description: 'La librairie chrétienne de référence. Des centaines de livres soigneusement sélectionnés pour nourrir ton âme, développer ton caractère et accomplir ta destinée.',
 }
 
 // ─── Sections ────────────────────────────────────────────────────────────────
@@ -34,8 +35,8 @@ const CATEGORIES = [
 ]
 
 const TRUST_FEATURES = [
-  { icon: Sparkles, label: '50 000+ titres',       sub: 'Romans, essais, ebooks' },
-  { icon: BookOpen, label: 'Livraison 24h',         sub: 'Ebooks téléchargeables instantanément' },
+  { icon: BookOpen, label: 'Livres chrétiens',      sub: 'Soigneusement sélectionnés' },
+  { icon: Sparkles, label: 'Auteurs inspirants',    sub: 'Des voix qui édifient' },
   { icon: Shield,   label: 'Paiement sécurisé',    sub: 'Stripe, 3D Secure' },
 ]
 
@@ -105,18 +106,18 @@ function Hero() {
         <div className="max-w-2xl flex flex-col gap-6">
           <span className="inline-flex w-fit items-center gap-1.5 px-3 py-1 rounded-full bg-accent-500/20 text-accent-400 text-xs font-semibold uppercase tracking-wider border border-accent-500/30">
             <Sparkles size={12} />
-            Nouveautés de l&apos;été 2026
+            Librairie chrétienne de référence
           </span>
 
           <h1 className="font-display text-5xl md:text-6xl font-extrabold text-white leading-[1.1] tracking-tight">
-            Où chaque histoire
+            Grandis dans la foi,
             <br />
-            <span className="text-accent-400">prend vie</span>
+            <span className="text-accent-400">un livre à la fois</span>
           </h1>
 
           <p className="text-base md:text-lg text-text-inverse-muted leading-relaxed max-w-xl">
-            Découvrez, achetez et lisez des milliers de livres soigneusement
-            sélectionnés pour les lecteurs passionnés.
+            Des centaines de livres chrétiens soigneusement sélectionnés pour
+            nourrir ton âme, développer ton caractère et accomplir ta destinée.
           </p>
 
           <div className="flex flex-wrap gap-3">
@@ -217,10 +218,10 @@ export default async function HomePage() {
       <div className="py-12">
         <div className="max-w-7xl mx-auto px-6">
           <CTABanner
-            headline="Rejoignez des millions de lecteurs"
-            description="Accédez à notre catalogue complet, recevez des recommandations personnalisées et suivez votre progression de lecture."
-            primaryCTA={{ label: 'Créer un compte gratuit', href: '/inscription' }}
-            secondaryCTA={{ label: 'En savoir plus', href: '/a-propos' }}
+            headline="Votre prochaine transformation commence ici"
+            description="Parcourez notre catalogue de livres chrétiens, découvrez des auteurs qui édifient et trouvez le livre qui changera votre vie."
+            primaryCTA={{ label: 'Explorer le catalogue', href: '/catalogue' }}
+            secondaryCTA={{ label: 'Découvrir', href: '/decouvrir' }}
           />
         </div>
       </div>
