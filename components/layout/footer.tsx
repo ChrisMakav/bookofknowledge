@@ -60,9 +60,20 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="border-t border-border-dark pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="border-t border-border-dark pt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-text-inverse-muted">
             © {new Date().getFullYear()} Book of Knowledge. Grandis dans la foi, un livre à la fois.
+          </p>
+          <p className="text-xs text-text-inverse-muted">
+            Créé par{' '}
+            <a
+              href="https://rmabila-kipoupa.xyz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent-400 hover:underline font-medium"
+            >
+              MAKAV Service Digital
+            </a>
           </p>
         </div>
       </div>
