@@ -50,3 +50,12 @@ export async function updateAuthor(
   revalidatePath('/admin/auteurs')
   redirect('/admin/auteurs')
 }
+
+export async function deleteAuthor(id: string): Promise<ActionResult> {
+  const supabase = await getSupabaseServiceClient()
+  const { error } = await supabase.from('authors').delete().eq('id', id)
+  if (error) return { error: error.message }
+
+  revalidatePath('/admin/auteurs')
+  return {}
+}

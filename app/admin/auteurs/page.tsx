@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Plus, Pencil } from 'lucide-react'
 import { adminGetAuthors } from '@/actions/admin/authors'
 import { DataTable } from '@/components/admin/data-table'
+import { DeleteAuthorButton } from '@/components/admin/delete-author-button'
 
 export const metadata: Metadata = { title: 'Admin — Auteurs' }
 
@@ -43,14 +44,17 @@ export default async function AdminAuthorsPage() {
             ),
           },
           {
-            key: 'actions', label: '', className: 'w-16',
+            key: 'actions', label: '', className: 'w-28',
             render: (a) => (
-              <Link
-                href={`/admin/auteurs/${a.id}/modifier`}
-                className="size-7 flex items-center justify-center rounded text-text-muted hover:text-text-primary hover:bg-surface-subtle"
-              >
-                <Pencil size={13} />
-              </Link>
+              <div className="flex items-center justify-end gap-1">
+                <Link
+                  href={`/admin/auteurs/${a.id}/modifier`}
+                  className="size-7 flex items-center justify-center rounded text-text-muted hover:text-text-primary hover:bg-surface-subtle"
+                >
+                  <Pencil size={13} />
+                </Link>
+                <DeleteAuthorButton id={a.id} name={a.name} />
+              </div>
             ),
           },
         ]}
