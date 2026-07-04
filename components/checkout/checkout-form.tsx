@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { AddressSchema, type AddressInput } from '@/lib/validations/checkout'
+import { updateOrderShippingAddress } from '@/actions/orders'
 import { cn } from '@/lib/utils'
 
 interface CheckoutFormProps {
@@ -37,7 +38,7 @@ const inputClass = cn(
   'transition-colors duration-[var(--duration-fast)]',
 )
 
-export function CheckoutForm({ orderId: _orderId, onSuccess }: CheckoutFormProps) {
+export function CheckoutForm({ orderId, onSuccess }: CheckoutFormProps) {
   const stripe   = useStripe()
   const elements = useElements()
   const [stripeError, setStripeError] = useState<string | null>(null)
@@ -51,14 +52,23 @@ export function CheckoutForm({ orderId: _orderId, onSuccess }: CheckoutFormProps
     defaultValues: { country: 'FR', line2: '' },
   })
 
-  async function onSubmit(_data: AddressInput) {
+  async function onSubmit(data: AddressInput) {
     if (!stripe || !elements) return
-
     setStripeError(null)
+
+    await updateOrderShippingAddress(orderId, {
+      full_name:   data.full_name,
+      line1:       data.line1,
+      line2:       data.line2 || undefined,
+      city:        data.city,
+      postal_code: data.postal_code,
+      country:     data.country,
+    })
+
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/checkout/success?order=${_orderId}`,
+        return_url: `${window.location.origin}/checkout/success?order=${orderId}`,
       },
       redirect: 'if_required',
     })
@@ -73,7 +83,6 @@ export function CheckoutForm({ orderId: _orderId, onSuccess }: CheckoutFormProps
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-      {/* Shipping address */}
       <section>
         <h2 className="text-base font-semibold text-text-primary mb-4">Adresse de livraison</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -101,7 +110,6 @@ export function CheckoutForm({ orderId: _orderId, onSuccess }: CheckoutFormProps
         </div>
       </section>
 
-      {/* Stripe payment element */}
       <section>
         <h2 className="text-base font-semibold text-text-primary mb-4">Moyen de paiement</h2>
         <PaymentElement />

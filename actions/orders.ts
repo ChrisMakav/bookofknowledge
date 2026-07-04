@@ -7,6 +7,7 @@ import type { CartItem, ShippingAddress } from '@/types'
 interface CreatePaymentIntentInput {
   items:           CartItem[]
   shippingAddress: ShippingAddress
+  promoCodeId?:    string
 }
 
 interface CreatePaymentIntentResult {
@@ -49,16 +50,47 @@ export async function createPaymentIntent(
     return { ...item, price: serverPrice }
   })
 
-  const tax   = parseFloat((subtotal * 0.2).toFixed(2))
-  const total = parseFloat((subtotal + tax).toFixed(2))
+  // ─── 2. Validate promo code server-side ──────────────────────────────────
+  let discount  = 0
+  let promoId: string | null = null
 
-  // ─── 2. Create pending order ──────────────────────────────────────────────
+  if (input.promoCodeId) {
+    const { data: promo } = await supabase
+      .from('promo_codes')
+      .select('*')
+      .eq('id', input.promoCodeId)
+      .eq('active', true)
+      .single()
+
+    if (promo) {
+      const now          = new Date()
+      const notExpired   = !promo.expires_at || new Date(promo.expires_at) > now
+      const notExhausted = promo.usage_limit === null || promo.used_count < promo.usage_limit
+
+      if (notExpired && notExhausted) {
+        if (promo.type === 'percentage') {
+          discount = parseFloat((subtotal * promo.value / 100).toFixed(2))
+        } else {
+          discount = parseFloat(Math.min(Number(promo.value), subtotal).toFixed(2))
+        }
+        promoId = promo.id
+      }
+    }
+  }
+
+  const discountedBase = Math.max(0, subtotal - discount)
+  const tax            = parseFloat((discountedBase * 0.2).toFixed(2))
+  const total          = parseFloat((discountedBase + tax).toFixed(2))
+
+  // ─── 3. Create pending order ──────────────────────────────────────────────
   const { data: order, error: orderError } = await supabase
     .from('orders')
     .insert({
       user_id:          user.id,
       status:           'pending',
       subtotal,
+      discount,
+      promo_code_id:    promoId,
       tax,
       total,
       shipping_address: input.shippingAddress,
@@ -70,7 +102,7 @@ export async function createPaymentIntent(
     return { clientSecret: '', orderId: '', error: 'Erreur lors de la création de commande' }
   }
 
-  // ─── 3. Insert order items ────────────────────────────────────────────────
+  // ─── 4. Insert order items ────────────────────────────────────────────────
   await supabase.from('order_items').insert(
     validatedItems.map((item) => ({
       order_id:   order.id,
@@ -81,21 +113,40 @@ export async function createPaymentIntent(
     })),
   )
 
-  // ─── 4. Create Stripe PaymentIntent ──────────────────────────────────────
+  // ─── 5. Create Stripe PaymentIntent ──────────────────────────────────────
   const stripe = getStripe()
   const intent = await stripe.paymentIntents.create({
     amount:   Math.round(total * 100),
     currency: 'eur',
-    metadata: { order_id: order.id, user_id: user.id },
+    metadata: {
+      order_id:      order.id,
+      user_id:       user.id,
+      promo_code_id: promoId ?? '',
+    },
   })
 
-  // ─── 5. Store payment intent ID ──────────────────────────────────────────
+  // ─── 6. Store payment intent ID ──────────────────────────────────────────
   await supabase
     .from('orders')
     .update({ stripe_payment_intent_id: intent.id })
     .eq('id', order.id)
 
   return { clientSecret: intent.client_secret!, orderId: order.id }
+}
+
+export async function updateOrderShippingAddress(
+  orderId: string,
+  address: ShippingAddress,
+): Promise<void> {
+  const supabase = await getSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+
+  await supabase
+    .from('orders')
+    .update({ shipping_address: address })
+    .eq('id', orderId)
+    .eq('user_id', user.id)
 }
 
 export async function getOrders() {
