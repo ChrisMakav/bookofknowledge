@@ -188,3 +188,21 @@ DROP TRIGGER IF EXISTS on_review_change ON reviews;
 CREATE TRIGGER on_review_change
   AFTER INSERT OR UPDATE OR DELETE ON reviews
   FOR EACH ROW EXECUTE FUNCTION update_book_rating();
+
+-- ─── Promo Codes ─────────────────────────────────────────────────────────────
+CREATE TABLE promo_codes (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  code        TEXT UNIQUE NOT NULL,
+  type        TEXT NOT NULL CHECK (type IN ('percentage', 'fixed')),
+  value       NUMERIC(10,2) NOT NULL CHECK (value > 0),
+  active      BOOLEAN NOT NULL DEFAULT true,
+  expires_at  TIMESTAMPTZ,
+  usage_limit INT,
+  used_count  INT NOT NULL DEFAULT 0,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE promo_codes ENABLE ROW LEVEL SECURITY;
+
+-- ─── Add discount columns to orders ──────────────────────────────────────────
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount       NUMERIC(10,2) NOT NULL DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS promo_code_id  UUID REFERENCES promo_codes(id) ON DELETE SET NULL;

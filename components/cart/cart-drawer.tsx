@@ -3,8 +3,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
-import { X, Trash2, Plus, Minus, ShoppingBag } from 'lucide-react'
+import { X, Trash2, Plus, Minus, ShoppingBag, Tag, CheckCircle } from 'lucide-react'
+import { useState, useTransition } from 'react'
 import { useCartStore } from '@/stores/cart.store'
+import { validatePromoCode } from '@/actions/promo'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -17,10 +19,37 @@ const formatLabels: Record<string, string> = {
 export function CartDrawer() {
   const isOpen      = useCartStore((s) => s.isCartOpen)
   const items       = useCartStore((s) => s.items)
+  const subtotal    = useCartStore((s) => s.subtotal())
   const totalPrice  = useCartStore((s) => s.totalPrice())
+  const promo       = useCartStore((s) => s.promo)
+  const applyPromo  = useCartStore((s) => s.applyPromo)
+  const clearPromo  = useCartStore((s) => s.clearPromo)
   const setCartOpen = useCartStore((s) => s.setCartOpen)
   const removeItem  = useCartStore((s) => s.removeItem)
   const update      = useCartStore((s) => s.updateQuantity)
+
+  const [promoInput, setPromoInput]   = useState('')
+  const [promoError, setPromoError]   = useState<string | null>(null)
+  const [isPending, startTransition]  = useTransition()
+
+  function handleApplyPromo() {
+    setPromoError(null)
+    startTransition(async () => {
+      const result = await validatePromoCode(promoInput, subtotal)
+      if (result.error) {
+        setPromoError(result.error)
+      } else if (result.data) {
+        applyPromo(result.data)
+        setPromoInput('')
+      }
+    })
+  }
+
+  function handleClearPromo() {
+    clearPromo()
+    setPromoInput('')
+    setPromoError(null)
+  }
 
   return (
     <AnimatePresence>
@@ -145,12 +174,72 @@ export function CartDrawer() {
             {/* Footer */}
             {items.length > 0 && (
               <div className="border-t border-border px-6 py-4 space-y-3">
+
+                {/* Promo code */}
+                {promo ? (
+                  <div className="flex items-center justify-between rounded-lg bg-green-50 border border-green-200 px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle size={14} className="text-green-600 shrink-0" />
+                      <span className="text-xs font-semibold text-green-700">
+                        {promo.code} — {promo.type === 'percentage' ? `${promo.value}%` : `${promo.value.toFixed(2)} €`} de réduction
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleClearPromo}
+                      className="text-text-muted hover:text-text-primary transition-colors"
+                      aria-label="Supprimer le code promo"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <Tag size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
+                        <input
+                          type="text"
+                          value={promoInput}
+                          onChange={(e) => { setPromoInput(e.target.value.toUpperCase()); setPromoError(null) }}
+                          onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
+                          placeholder="Code promo"
+                          className="h-9 w-full pl-8 pr-3 text-sm rounded-lg border border-border bg-surface-page text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-600"
+                        />
+                      </div>
+                      <button
+                        onClick={handleApplyPromo}
+                        disabled={isPending || !promoInput.trim()}
+                        className="h-9 px-3 rounded-lg text-sm font-semibold bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 transition-colors"
+                      >
+                        {isPending ? '…' : 'Appliquer'}
+                      </button>
+                    </div>
+                    {promoError && (
+                      <p className="text-xs text-red-500">{promoError}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Totals */}
+                {promo && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-text-secondary">Sous-total</span>
+                    <span className="text-text-primary">{subtotal.toFixed(2)} €</span>
+                  </div>
+                )}
+                {promo && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-green-600">Réduction</span>
+                    <span className="text-green-600 font-semibold">−{promo.discount.toFixed(2)} €</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-text-secondary">Sous-total</span>
+                  <span className="text-sm text-text-secondary">Total</span>
                   <span className="text-lg font-bold text-text-primary">
                     {totalPrice.toFixed(2)} €
                   </span>
                 </div>
+
                 <p className="text-xs text-text-muted">
                   Livraison et taxes calculées à la caisse.
                 </p>
