@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { Check } from 'lucide-react'
 import { updateUserRole } from '@/actions/admin/users'
 
 const ROLES = [
@@ -11,19 +12,25 @@ const ROLES = [
 type Role = 'admin' | 'user'
 
 export function RoleSelect({ userId, current }: { userId: string; current: Role }) {
-  const [role, setRole]     = useState<Role>(current)
-  const [isPending, start]  = useTransition()
-  const [error, setError]   = useState<string | null>(null)
+  const [role, setRole]      = useState<Role>(current)
+  const [saved, setSaved]    = useState<Role>(current)
+  const [isPending, start]   = useTransition()
+  const [error, setError]    = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
 
-  function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const next = e.target.value as Role
-    setRole(next)
+  const dirty = role !== saved
+
+  function handleSave() {
     setError(null)
+    setSuccess(false)
     start(async () => {
-      const res = await updateUserRole(userId, next)
+      const res = await updateUserRole(userId, role)
       if (res.error) {
-        setRole(current)
         setError(res.error)
+      } else {
+        setSaved(role)
+        setSuccess(true)
+        setTimeout(() => setSuccess(false), 2000)
       }
     })
   }
@@ -32,7 +39,7 @@ export function RoleSelect({ userId, current }: { userId: string; current: Role 
     <div className="flex items-center gap-2">
       <select
         value={role}
-        onChange={handleChange}
+        onChange={(e) => { setRole(e.target.value as Role); setError(null); setSuccess(false) }}
         disabled={isPending}
         className={`text-xs font-semibold px-2 py-1 rounded-full border appearance-none cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-brand-600 disabled:opacity-60 ${
           role === 'admin'
@@ -44,6 +51,23 @@ export function RoleSelect({ userId, current }: { userId: string; current: Role 
           <option key={value} value={value}>{label}</option>
         ))}
       </select>
+
+      {dirty && (
+        <button
+          onClick={handleSave}
+          disabled={isPending}
+          className="h-6 px-2 rounded text-xs font-semibold bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 transition-colors"
+        >
+          {isPending ? '…' : 'Enregistrer'}
+        </button>
+      )}
+
+      {success && !dirty && (
+        <span className="flex items-center gap-1 text-xs text-green-600 font-medium">
+          <Check size={12} /> Enregistré
+        </span>
+      )}
+
       {error && <span className="text-xs text-red-500">{error}</span>}
     </div>
   )

@@ -12,3 +12,11 @@ export async function updateUserRole(userId: string, role: 'admin' | 'user'): Pr
   revalidatePath('/admin/utilisateurs')
   return {}
 }
+
+export async function deleteUser(userId: string): Promise<{ error?: string }> {
+  const supabase = await getSupabaseServiceClient()
+  const { error } = await supabase.auth.admin.deleteUser(userId)
+  if (error) return { error: error.message }
+  revalidatePath('/admin/utilisateurs')
+  return {}
+}

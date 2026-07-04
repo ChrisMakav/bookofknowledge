@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { getSupabaseServiceClient } from '@/lib/supabase/server'
 import { DataTable } from '@/components/admin/data-table'
 import { RoleSelect } from '@/components/admin/role-select'
+import { DeleteUserButton } from '@/components/admin/delete-user-button'
 
 export const metadata: Metadata = { title: 'Admin — Utilisateurs' }
 
@@ -66,6 +67,12 @@ export default async function AdminUsersPage() {
               <span className="text-text-secondary text-xs">
                 {new Date(u.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
               </span>
+            ),
+          },
+          {
+            key: 'actions', label: '', className: 'w-12',
+            render: (u) => (
+              <DeleteUserButton userId={u.id} name={u.full_name ?? u.email} />
             ),
           },
         ]}
