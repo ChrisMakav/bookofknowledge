@@ -79,6 +79,7 @@ export function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
           <button
             onClick={() => setCartOpen(true)}
             aria-label={totalItems > 0 ? `Panier, ${totalItems} article${totalItems > 1 ? 's' : ''}` : 'Panier'}
+            suppressHydrationWarning
             className={cn(
               'relative size-9 flex items-center justify-center rounded-lg',
               'text-text-secondary hover:bg-surface-subtle hover:text-text-primary',

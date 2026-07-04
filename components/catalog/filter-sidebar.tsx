@@ -2,7 +2,6 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useCallback } from 'react'
-import { FilterTag } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
 const GENRES = [
@@ -98,15 +97,21 @@ export function FilterSidebar({ className }: FilterSidebarProps) {
         <h3 className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-3">
           Catégorie
         </h3>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-1">
           {GENRES.map(({ key, label }) => (
-            <FilterTag
+            <button
               key={key}
-              label={label}
-              selected={currentGenre === key}
               onClick={() => push('genre', key)}
-              color={undefined}
-            />
+              className={cn(
+                'text-left px-3 py-2 rounded-lg text-sm transition-colors duration-[var(--duration-fast)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600',
+                currentGenre === key
+                  ? 'bg-brand-50 text-brand-600 font-semibold'
+                  : 'text-text-secondary hover:bg-surface-subtle hover:text-text-primary',
+              )}
+            >
+              {label}
+            </button>
           ))}
         </div>
       </div>
@@ -116,14 +121,21 @@ export function FilterSidebar({ className }: FilterSidebarProps) {
         <h3 className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-3">
           Format
         </h3>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-1">
           {FORMATS.map(({ value, label }) => (
-            <FilterTag
+            <button
               key={value}
-              label={label}
-              selected={currentFormat === value}
               onClick={() => push('format', value)}
-            />
+              className={cn(
+                'text-left px-3 py-2 rounded-lg text-sm transition-colors duration-[var(--duration-fast)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600',
+                currentFormat === value
+                  ? 'bg-brand-50 text-brand-600 font-semibold'
+                  : 'text-text-secondary hover:bg-surface-subtle hover:text-text-primary',
+              )}
+            >
+              {label}
+            </button>
           ))}
         </div>
       </div>
