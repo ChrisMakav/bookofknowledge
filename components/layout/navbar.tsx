@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { ShoppingCart, CircleUser, LayoutDashboard, User, LogOut } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { SearchInput } from '@/components/ui/search-input'
 import { useCartStore } from '@/stores/cart.store'
 import { cn } from '@/lib/utils'
@@ -22,7 +22,10 @@ export function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
   const totalItems  = useCartStore((s) => s.totalItems())
   const setCartOpen = useCartStore((s) => s.setCartOpen)
   const [menuOpen, setMenuOpen]  = useState(false)
+  const [mounted, setMounted]    = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => { setMounted(true) }, [])
 
   function handleSearch(query: string) {
     const q = query.trim()
@@ -85,8 +88,7 @@ export function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
         <div className="flex items-center gap-1">
           <button
             onClick={() => setCartOpen(true)}
-            aria-label={totalItems > 0 ? `Panier, ${totalItems} article${totalItems > 1 ? 's' : ''}` : 'Panier'}
-            suppressHydrationWarning
+            aria-label={mounted && totalItems > 0 ? `Panier, ${totalItems} article${totalItems > 1 ? 's' : ''}` : 'Panier'}
             className={cn(
               'relative size-9 flex items-center justify-center rounded-lg',
               'text-text-secondary hover:bg-surface-subtle hover:text-text-primary',
@@ -95,7 +97,7 @@ export function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
             )}
           >
             <ShoppingCart size={20} />
-            {totalItems > 0 && (
+            {mounted && totalItems > 0 && (
               <span className="absolute top-1 right-1 size-4 flex items-center justify-center bg-brand-600 text-white text-[10px] font-bold rounded-full">
                 {totalItems > 9 ? '9+' : totalItems}
               </span>
