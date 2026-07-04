@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
-const PROTECTED_PATHS = ['/compte', '/paiement']
+const PROTECTED_PATHS = ['/compte', '/checkout']
 const AUTH_PATHS      = ['/connexion', '/inscription', '/mot-de-passe-oublie']
 
 export async function proxy(request: NextRequest) {

@@ -244,7 +244,7 @@ export function CartDrawer() {
                   Livraison et taxes calculées à la caisse.
                 </p>
                 <Link
-                  href="/paiement"
+                  href="/checkout"
                   onClick={() => setCartOpen(false)}
                   className={cn(
                     'flex items-center justify-center w-full h-12 rounded-lg',
