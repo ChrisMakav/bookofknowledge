@@ -29,13 +29,14 @@ export default async function AdminPage() {
       <h1 className="text-2xl font-bold font-display text-text-primary">Dashboard</h1>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard label="Livres"     value={bookCount  ?? 0} icon={BookOpen}    />
-        <StatsCard label="Commandes"  value={orderCount ?? 0} icon={ShoppingBag} />
-        <StatsCard label="Utilisateurs" value={userCount ?? 0} icon={Users}      />
+        <StatsCard label="Livres"       value={bookCount  ?? 0} icon={BookOpen}    href="/admin/livres"      />
+        <StatsCard label="Commandes"    value={orderCount ?? 0} icon={ShoppingBag} href="/admin/commandes"   />
+        <StatsCard label="Utilisateurs" value={userCount  ?? 0} icon={Users}       href="/admin/utilisateurs"/>
         <StatsCard
           label="CA (payé)"
           value={`${revenue.toFixed(2)} €`}
           icon={TrendingUp}
+          href="/admin/commandes"
         />
       </div>
 

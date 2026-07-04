@@ -2,16 +2,17 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, BookOpen, ShoppingBag, Users, Tag, LogOut } from 'lucide-react'
+import { LayoutDashboard, BookOpen, ShoppingBag, Users, UserCircle, Tag, LogOut } from 'lucide-react'
 import { logout } from '@/actions/auth'
 import { cn } from '@/lib/utils'
 
 const NAV = [
-  { href: '/admin',           label: 'Dashboard',  icon: LayoutDashboard },
-  { href: '/admin/livres',    label: 'Livres',      icon: BookOpen },
-  { href: '/admin/commandes', label: 'Commandes',   icon: ShoppingBag },
-  { href: '/admin/auteurs',     label: 'Auteurs',     icon: Users },
-  { href: '/admin/categories',  label: 'Catégories',  icon: Tag },
+  { href: '/admin',                  label: 'Dashboard',      icon: LayoutDashboard },
+  { href: '/admin/livres',           label: 'Livres',          icon: BookOpen },
+  { href: '/admin/commandes',        label: 'Commandes',       icon: ShoppingBag },
+  { href: '/admin/auteurs',          label: 'Auteurs',         icon: Users },
+  { href: '/admin/utilisateurs',     label: 'Utilisateurs',    icon: UserCircle },
+  { href: '/admin/categories',       label: 'Catégories',      icon: Tag },
 ]
 
 export function AdminSidebar() {
