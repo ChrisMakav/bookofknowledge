@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { getSupabaseServiceClient } from '@/lib/supabase/server'
 import { DataTable } from '@/components/admin/data-table'
+import { RoleSelect } from '@/components/admin/role-select'
 
 export const metadata: Metadata = { title: 'Admin — Utilisateurs' }
 
@@ -53,13 +54,10 @@ export default async function AdminUsersPage() {
           {
             key: 'role', label: 'Rôle',
             render: (u) => (
-              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                u.role === 'admin'
-                  ? 'bg-brand-50 text-brand-600'
-                  : 'bg-surface-subtle text-text-secondary'
-              }`}>
-                {u.role ?? 'utilisateur'}
-              </span>
+              <RoleSelect
+                userId={u.id}
+                current={(u.role === 'admin' ? 'admin' : 'user')}
+              />
             ),
           },
           {
