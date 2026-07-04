@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { ShoppingCart, CircleUser, LayoutDashboard, User, LogOut } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { SearchInput } from '@/components/ui/search-input'
@@ -18,10 +18,17 @@ const navItems = [
 
 export function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname    = usePathname()
+  const router      = useRouter()
   const totalItems  = useCartStore((s) => s.totalItems())
   const setCartOpen = useCartStore((s) => s.setCartOpen)
   const [menuOpen, setMenuOpen]  = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+
+  function handleSearch(query: string) {
+    const q = query.trim()
+    if (!q) return
+    router.push(`/catalogue?q=${encodeURIComponent(q)}`)
+  }
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 h-16 bg-surface-card border-b border-border">
@@ -71,7 +78,7 @@ export function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
 
         {/* Search */}
         <div className="hidden md:block">
-          <SearchInput className="w-64" />
+          <SearchInput className="w-64" onSearch={handleSearch} />
         </div>
 
         {/* Actions */}
