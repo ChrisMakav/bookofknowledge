@@ -6,12 +6,24 @@ export const metadata: Metadata = { title: 'Admin — Utilisateurs' }
 
 export default async function AdminUsersPage() {
   const supabase = await getSupabaseServiceClient()
-  const { data: users } = await supabase
-    .from('profiles')
-    .select('id, full_name, email, created_at, role')
-    .order('created_at', { ascending: false })
 
-  const rows = users ?? []
+  const [
+    { data: { users: authUsers } },
+    { data: profiles },
+  ] = await Promise.all([
+    supabase.auth.admin.listUsers({ perPage: 1000 }),
+    supabase.from('profiles').select('id, full_name, avatar_url'),
+  ])
+
+  const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]))
+
+  const rows = authUsers.map((u) => ({
+    id:         u.id,
+    email:      u.email ?? '—',
+    full_name:  profileMap.get(u.id)?.full_name ?? null,
+    role:       (u.app_metadata?.role ?? u.user_metadata?.role ?? null) as string | null,
+    created_at: u.created_at,
+  }))
 
   return (
     <div className="flex flex-col gap-6">
@@ -29,11 +41,11 @@ export default async function AdminUsersPage() {
             render: (u) => (
               <div className="flex items-center gap-3">
                 <div className="size-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 text-xs font-bold shrink-0">
-                  {(u.full_name ?? u.email ?? '?')[0].toUpperCase()}
+                  {(u.full_name ?? u.email)[0].toUpperCase()}
                 </div>
                 <div>
                   <p className="font-medium text-text-primary">{u.full_name ?? '—'}</p>
-                  <p className="text-xs text-text-muted">{u.email ?? '—'}</p>
+                  <p className="text-xs text-text-muted">{u.email}</p>
                 </div>
               </div>
             ),

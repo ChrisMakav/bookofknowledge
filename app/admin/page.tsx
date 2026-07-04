@@ -11,14 +11,16 @@ export default async function AdminPage() {
   const [
     { count: bookCount },
     { count: orderCount },
-    { count: userCount },
+    { data: { users: authUsers } },
     { data: paidOrders },
   ] = await Promise.all([
-    supabase.from('books').select('*',    { count: 'exact', head: true }),
-    supabase.from('orders').select('*',   { count: 'exact', head: true }),
-    supabase.from('profiles').select('*', { count: 'exact', head: true }),
+    supabase.from('books').select('*',  { count: 'exact', head: true }),
+    supabase.from('orders').select('*', { count: 'exact', head: true }),
+    supabase.auth.admin.listUsers({ perPage: 1000 }),
     supabase.from('orders').select('total').eq('status', 'paid'),
   ])
+
+  const userCount = authUsers.length
 
   const revenue = (paidOrders ?? []).reduce(
     (sum: number, o: { total: number }) => sum + (o.total ?? 0), 0
