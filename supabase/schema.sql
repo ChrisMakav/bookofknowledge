@@ -206,3 +206,6 @@ ALTER TABLE promo_codes ENABLE ROW LEVEL SECURITY;
 -- ─── Add discount columns to orders ──────────────────────────────────────────
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount       NUMERIC(10,2) NOT NULL DEFAULT 0;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS promo_code_id  UUID REFERENCES promo_codes(id) ON DELETE SET NULL;
+
+-- ─── Add shipping cost column to orders ──────────────────────────────────────
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_cost  NUMERIC(10,2) NOT NULL DEFAULT 4.90;

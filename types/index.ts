@@ -149,7 +149,9 @@ export interface Order {
   status:                   OrderStatus
   stripe_payment_intent_id: string | null
   subtotal:                 number
+  discount:                 number
   tax:                      number
+  shipping_cost:            number
   total:                    number
   shipping_address:         ShippingAddress | null
   created_at:               string

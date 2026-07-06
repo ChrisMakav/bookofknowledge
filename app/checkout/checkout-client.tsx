@@ -28,10 +28,11 @@ export function CheckoutClient() {
   const [orderId,      setOrderId]      = useState<string | null>(null)
   const [error,        setError]        = useState<string | null>(null)
 
-  const discount  = promo?.discount ?? 0
-  const taxBase   = Math.max(0, subtotal - discount)
-  const tax       = parseFloat((taxBase * 0.2).toFixed(2))
-  const totalTTC  = parseFloat((taxBase + tax).toFixed(2))
+  const discount     = promo?.discount ?? 0
+  const taxBase      = Math.max(0, subtotal - discount)
+  const tax          = parseFloat((taxBase * 0.2).toFixed(2))
+  const shippingCost = 4.90
+  const totalTTC     = parseFloat((taxBase + tax + shippingCost).toFixed(2))
 
   useEffect(() => {
     if (items.length === 0) {
@@ -160,6 +161,11 @@ export function CheckoutClient() {
           <div className="flex justify-between text-text-secondary">
             <span>TVA (20%)</span>
             <span>{tax.toFixed(2)} €</span>
+          </div>
+
+          <div className="flex justify-between text-text-secondary">
+            <span>Frais de livraison</span>
+            <span>{shippingCost.toFixed(2)} €</span>
           </div>
 
           <div className="flex justify-between font-bold text-base text-text-primary pt-1 border-t border-border mt-1">

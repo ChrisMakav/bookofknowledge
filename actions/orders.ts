@@ -16,6 +16,8 @@ interface CreatePaymentIntentResult {
   error?:       string
 }
 
+const SHIPPING_COST = 4.90
+
 export async function createPaymentIntent(
   input: CreatePaymentIntentInput,
 ): Promise<CreatePaymentIntentResult> {
@@ -80,7 +82,8 @@ export async function createPaymentIntent(
 
   const discountedBase = Math.max(0, subtotal - discount)
   const tax            = parseFloat((discountedBase * 0.2).toFixed(2))
-  const total          = parseFloat((discountedBase + tax).toFixed(2))
+  const shippingCost   = SHIPPING_COST
+  const total          = parseFloat((discountedBase + tax + shippingCost).toFixed(2))
 
   // ─── 3. Create pending order ──────────────────────────────────────────────
   const { data: order, error: orderError } = await supabase
@@ -92,6 +95,7 @@ export async function createPaymentIntent(
       discount,
       promo_code_id:    promoId,
       tax,
+      shipping_cost:    shippingCost,
       total,
       shipping_address: input.shippingAddress,
     })
@@ -161,4 +165,19 @@ export async function getOrders() {
     .order('created_at', { ascending: false })
 
   return data ?? []
+}
+
+export async function getOrder(orderId: string) {
+  const supabase = await getSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const { data } = await supabase
+    .from('orders')
+    .select('*, order_items(*, book:books(title, cover_url, slug))')
+    .eq('id', orderId)
+    .eq('user_id', user.id)
+    .single()
+
+  return data ?? null
 }

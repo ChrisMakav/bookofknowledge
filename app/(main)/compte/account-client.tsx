@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { ChevronRight } from 'lucide-react'
 import { logout } from '@/actions/auth'
 import { BookCard } from '@/components/books/book-card'
 import { cn } from '@/lib/utils'
@@ -77,7 +78,11 @@ export function AccountClient({ profile, orders, favorites }: AccountClientProps
             </div>
           ) : (
             orders.map((order) => (
-              <div key={order.id} className="bg-surface-card rounded-xl border border-border p-4">
+              <Link
+                key={order.id}
+                href={`/compte/commandes/${order.id}`}
+                className="bg-surface-card rounded-xl border border-border p-4 hover:border-brand-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600"
+              >
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold text-text-primary">
@@ -101,9 +106,10 @@ export function AccountClient({ profile, orders, favorites }: AccountClientProps
                     <span className="text-sm font-bold text-text-primary">
                       {order.total.toFixed(2)} €
                     </span>
+                    <ChevronRight size={16} className="text-text-muted" />
                   </div>
                 </div>
-              </div>
+              </Link>
             ))
           )}
         </div>
