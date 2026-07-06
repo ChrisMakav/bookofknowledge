@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { adminGetOrders } from '@/actions/admin/orders'
 import { DataTable } from '@/components/admin/data-table'
 import { OrderStatusSelect } from './order-status-select'
@@ -61,7 +62,14 @@ export default async function AdminOrdersPage({
         columns={[
           {
             key: 'id', label: 'Commande',
-            render: (o) => <span className="font-mono text-xs text-text-muted">#{o.id.slice(-8).toUpperCase()}</span>,
+            render: (o) => (
+              <Link
+                href={`/admin/commandes/${o.id}`}
+                className="font-mono text-xs text-brand-600 hover:underline"
+              >
+                #{o.id.slice(-8).toUpperCase()}
+              </Link>
+            ),
           },
           {
             key: 'date', label: 'Date',

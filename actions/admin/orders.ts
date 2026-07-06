@@ -40,6 +40,31 @@ export async function adminGetOrders({ page = 1, status }: { page?: number; stat
   return { orders: ordersWithProfiles, total: count ?? 0, pages: Math.ceil((count ?? 0) / limit) }
 }
 
+export async function adminGetOrder(orderId: string) {
+  const supabase = getSupabaseServiceClient()
+
+  const { data: order } = await supabase
+    .from('orders')
+    .select('*, order_items(*, book:books(title, cover_url, slug))')
+    .eq('id', orderId)
+    .single()
+
+  if (!order) return null
+
+  const [{ data: profile }, { data: authUser }] = await Promise.all([
+    supabase.from('profiles').select('full_name').eq('id', order.user_id).single(),
+    supabase.auth.admin.getUserById(order.user_id),
+  ])
+
+  return {
+    ...order,
+    customer: {
+      full_name: profile?.full_name ?? null,
+      email:     authUser?.user?.email ?? null,
+    },
+  }
+}
+
 export async function updateOrderStatus(
   orderId: string,
   status: OrderStatus,
