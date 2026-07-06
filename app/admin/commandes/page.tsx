@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { adminGetOrders } from '@/actions/admin/orders'
 import { DataTable } from '@/components/admin/data-table'
 import { OrderStatusSelect } from './order-status-select'
+import { DeleteOrderButton } from './delete-order-button'
 import type { OrderStatus } from '@/types'
 
 export const metadata: Metadata = { title: 'Admin — Commandes' }
@@ -102,6 +103,10 @@ export default async function AdminOrdersPage({
           {
             key: 'actions', label: 'Changer statut', className: 'w-44',
             render: (o) => <OrderStatusSelect orderId={o.id} current={o.status as OrderStatus} />,
+          },
+          {
+            key: 'delete', label: '', className: 'w-12',
+            render: (o) => o.status === 'cancelled' ? <DeleteOrderButton orderId={o.id} /> : null,
           },
         ]}
       />

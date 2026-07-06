@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { adminGetOrder } from '@/actions/admin/orders'
 import { OrderStatusSelect } from '../order-status-select'
+import { DeleteOrderButton } from '../delete-order-button'
 import { cn } from '@/lib/utils'
 import type { BookFormat, OrderItem, OrderStatus } from '@/types'
 
@@ -78,6 +79,9 @@ export default async function AdminOrderDetailPage({
             {STATUS_LABELS[order.status] ?? order.status}
           </span>
           <OrderStatusSelect orderId={order.id} current={order.status as OrderStatus} />
+          {order.status === 'cancelled' && (
+            <DeleteOrderButton orderId={order.id} redirectAfterDelete />
+          )}
         </div>
       </div>
 

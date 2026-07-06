@@ -65,6 +65,27 @@ export async function adminGetOrder(orderId: string) {
   }
 }
 
+export async function deleteOrder(orderId: string): Promise<ActionResult> {
+  const supabase = getSupabaseServiceClient()
+
+  const { data: order } = await supabase
+    .from('orders')
+    .select('status')
+    .eq('id', orderId)
+    .single()
+
+  if (!order) return { error: 'Commande introuvable' }
+  if (order.status !== 'cancelled') {
+    return { error: 'Seules les commandes annulées peuvent être supprimées' }
+  }
+
+  const { error } = await supabase.from('orders').delete().eq('id', orderId)
+  if (error) return { error: error.message }
+
+  revalidatePath('/admin/commandes')
+  return { success: true }
+}
+
 export async function updateOrderStatus(
   orderId: string,
   status: OrderStatus,
