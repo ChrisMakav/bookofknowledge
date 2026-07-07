@@ -1,7 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { useActionState } from 'react'
 import Link from 'next/link'
+import { Eye, EyeOff } from 'lucide-react'
 import { register, type ActionResult } from '@/actions/auth'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -17,24 +19,42 @@ function Field({
   type?:         string
   autoComplete?: string
 }) {
+  const [visible, setVisible] = useState(false)
+  const isPassword = type === 'password'
+  const inputType  = isPassword ? (visible ? 'text' : 'password') : type
+
   return (
     <div className="flex flex-col gap-1.5">
       <label htmlFor={name} className="text-sm font-medium text-text-primary">
         {label}
       </label>
-      <input
-        id={name}
-        name={name}
-        type={type}
-        autoComplete={autoComplete}
-        required
-        className={cn(
-          'h-10 w-full rounded-lg border border-border bg-surface-page px-3 text-sm text-text-primary',
-          'placeholder:text-text-muted',
-          'transition-colors duration-[var(--duration-fast)]',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:border-transparent',
+      <div className="relative">
+        <input
+          id={name}
+          name={name}
+          type={inputType}
+          autoComplete={autoComplete}
+          required
+          className={cn(
+            'h-10 w-full rounded-lg border border-border bg-surface-page px-3 text-sm text-text-primary',
+            'placeholder:text-text-muted',
+            'transition-colors duration-[var(--duration-fast)]',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:border-transparent',
+            isPassword && 'pr-10',
+          )}
+        />
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setVisible((v) => !v)}
+            aria-label={visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+            tabIndex={-1}
+            className="absolute inset-y-0 right-0 flex items-center px-3 text-text-muted hover:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 rounded-r-lg"
+          >
+            {visible ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
         )}
-      />
+      </div>
     </div>
   )
 }
