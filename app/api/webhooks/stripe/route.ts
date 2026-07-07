@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getStripe } from '@/lib/stripe/server'
 import { getSupabaseServiceClient } from '@/lib/supabase/server'
+import { sendOrderConfirmationEmail } from '@/lib/resend/order-confirmation'
 
 export async function POST(request: Request) {
   const body       = await request.text()
@@ -32,6 +33,14 @@ export async function POST(request: Request) {
     if (orderId) {
       const supabase = await getSupabaseServiceClient()
 
+      const { data: existingOrder } = await supabase
+        .from('orders')
+        .select('status')
+        .eq('id', orderId)
+        .single()
+
+      const alreadyPaid = existingOrder?.status === 'paid'
+
       await supabase
         .from('orders')
         .update({ status: 'paid', updated_at: new Date().toISOString() })
@@ -49,6 +58,14 @@ export async function POST(request: Request) {
             .from('promo_codes')
             .update({ used_count: promo.used_count + 1 })
             .eq('id', promoCodeId)
+        }
+      }
+
+      if (!alreadyPaid) {
+        try {
+          await sendOrderConfirmationEmail(orderId)
+        } catch (err) {
+          console.error('Failed to send order confirmation email', err)
         }
       }
     }
